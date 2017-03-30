@@ -1,1 +1,4 @@
 node_modules/
+.ipynb_checkpoints/
+.cache-*
+data/imgs/

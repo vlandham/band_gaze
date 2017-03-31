@@ -1,0 +1,539 @@
+---
+title: "Band Gaze"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(scales)
+library(forcats)
+```
+
+```{r}
+library(jpeg)
+library(knitr)
+```
+
+
+```{r}
+filename <- 'data/faces.csv'
+faces <- read_csv(filename)
+
+```
+
+```{r}
+faces <- faces %>% mutate(has_face = face_count > 0)
+with_faces <- faces %>% filter(face_count > 0)
+```
+
+```{r}
+unique_artists <- faces %>% distinct(cat_id, artist_id, .keep_all = TRUE)
+```
+
+
+## Artist Counts
+
+
+```{r}
+unique_artists %>%
+  ggplot(aes(x = fct_rev(fct_infreq(cat_name)))) +
+  coord_flip() +
+  geom_bar() +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Artists Per Category", y = "") +
+  theme_fivethirtyeight()
+```
+
+```{r}
+byCat <- unique_artists %>% group_by(cat_name) %>% mutate(cat_count = n()) %>%
+  arrange(-cat_count) %>%
+  group_by(cat_name, has_face) %>% summarise(count = n(), per = count / cat_count[1], cat_count = cat_count[1]) %>% arrange(cat_count)
+```
+
+```{r}
+byCat %>% filter(has_face == TRUE) %>%
+  ggplot(aes(x = fct_inorder(cat_name), y = count )) + 
+  coord_flip() +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Count of Artists with Faces", y = "") +
+  theme_fivethirtyeight()
+
+```
+
+```{r}
+byCat %>% 
+  ggplot(aes(x = fct_inorder(cat_name), y = per, fill = has_face)) + 
+  coord_flip() +
+  scale_y_continuous(labels = percent) +
+  geom_bar(stat = "identity") + 
+  labs(x = "", y = "", title = "Percent Artists with Face by Category") +
+  theme_fivethirtyeight()
+
+```
+
+
+## Face Counts
+
+```{r}
+faces %>%
+  ggplot(aes(x = (face_count))) +
+  geom_histogram(binwidth = 1.0) +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(0, 15, 1)) +
+  theme_fivethirtyeight() +
+  labs(title = "Distribution of Face Count", x = "Number of Faces in Artist Image")
+
+```
+
+```{r}
+unique_artists %>%
+  ggplot(aes(x = (face_count))) +
+  geom_histogram(binwidth = 1.0) +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(0, 15, 1)) +
+  theme_fivethirtyeight() +
+  labs(title = "Distribution of Face Count for Artists", x = "Number of Faces in Artist Image")
+
+```
+
+Lots of no-faces detected and solo artists.
+
+
+### Face Count by Genre
+
+```{r}
+byCatFaceCount <- unique_artists %>% filter(has_face == TRUE) %>%
+  group_by(cat_name) %>% summarise(mean_face_count = mean(face_count), median_face_count = median(face_count))
+  
+```
+
+```{r}
+
+```
+
+
+```{r}
+unique_artists %>% filter(has_face == TRUE) %>% #filter(cat_id == "metal") %>%
+  ggplot(aes(x = face_count)) +
+  #geom_histogram(binwidth = 1.0) +
+  #geom_histogram(aes(y=..count../sum(..count..)), binwidth = 1.0) + 
+  geom_histogram(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]), binwidth = 1.0) + 
+  scale_y_continuous(labels = percent) +
+  scale_x_continuous(breaks = seq(1, 14, 2)) +
+  facet_wrap(~ cat_name) + 
+  labs(title = "Distribution of Face Count for Artists by Category", x = "Number of Faces in Artist Image") +
+  theme_fivethirtyeight()
+```
+
+Cool!
+
+So Country and Hip Hop artists almost always have solo images.
+
+But you can't have a metal, punk, or rock band without at least a few people. 
+
+
+## Gender
+
+```{r}
+with_faces %>%
+  ggplot(aes(x = 1, fill = face_gender)) + 
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(labels = c()) +
+  geom_bar() + 
+  labs(x = "", y = "", title = "Count of Faces by Gender") +
+  theme_fivethirtyeight()
+```
+
+
+```{r}
+with_faces %>%
+  ggplot(aes(x = 1, fill = face_gender)) + 
+  scale_y_continuous(labels = percent) +
+  scale_x_continuous(labels = c()) +
+  geom_bar(aes(y = (..count..)/sum(..count..)), position = "dodge") + 
+  labs(x = "", y = "", title = "Percent of Faces by Gender") +
+  theme_fivethirtyeight()
+```
+
+Lots of Dudes in this data!
+
+### Gender by Category
+
+
+```{r}
+with_faces %>% #filter(face_gender == 'female') %>% 
+  ggplot(aes(x = face_gender))  +
+  geom_bar() +
+  #geom_histogram(aes(y=..count../sum(..count..)), binwidth = 1.0) + 
+  #geom_histogram(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]), binwidth = 1.0) + 
+  scale_y_continuous(labels = comma) +
+  #scale_x_continuous(breaks = seq(1, 14, 2)) +
+  facet_wrap(~ cat_name) + 
+  labs(title = "Gender Counts of Faces by Category", x = "") +
+  theme_fivethirtyeight()
+```
+
+```{r}
+with_faces %>% #filter(face_gender == 'female') %>% 
+  ggplot(aes(x = face_gender))  +
+  #geom_bar() +
+  #geom_histogram(aes(y=..count../sum(..count..)), binwidth = 1.0) + 
+  geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]) ) + 
+  scale_y_continuous(labels = percent) +
+  #scale_x_continuous(breaks = seq(1, 14, 2)) +
+  facet_wrap(~ cat_name) + 
+  labs(title = "Gender Percents of Faces by Category", x = "") +
+  theme_fivethirtyeight()
+```
+
+
+## Glasses
+
+```{r}
+with_faces %>%
+  ggplot(aes(x = face_glasses, fill = face_glasses)) + 
+  scale_y_continuous(labels = percent) +
+  geom_bar(aes(y = (..count..)/sum(..count..)), position = "dodge") + 
+  labs(x = "", y = "", title = "Percentage of Glasses on Faces", fill = "Glasses Type") +
+  theme_fivethirtyeight()
+```
+
+Swimming Goggles ?? That can't be right.
+
+```{r}
+face_ind <- c(1,2,3)
+filtered_faces <- with_faces %>% filter(face_glasses == 'SwimmingGoggles') %>% filter(face_count == 1) 
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+
+Well, ok. Maybe not.
+
+```{r}
+with_faces %>% filter(!(face_glasses == 'NoGlasses')) %>% filter(!(face_glasses == 'SwimmingGoggles')) %>%
+  ggplot(aes(x = face_glasses, fill = face_glasses)) + 
+  scale_y_continuous(labels = percent) +
+  geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]) ) + 
+  facet_wrap(~ cat_name) + 
+  labs(x = "", y = "", title = "Sun Glasses vs Reading Glasses by Category", fill = "Glasses Type") +
+  theme_fivethirtyeight()
+```
+
+## 3D Face Pose
+
+There are 3 values recorded for face pose: Yaw, Roll, and Pitch. 
+
+Most explainations of these features only explain it for [Aircraft](https://www.youtube.com/watch?v=pQ24NtnaLl8), but here is my understanding for human faces:
+
+* Yaw: The direction your nose is pointing, to the left or right.
+* Roll: Cocking your head to the left or right.
+* Pitch: Looking up or down.
+
+Unfortunately, Pitch isn't yet computed - so we can only look 
+
+Lets look at Yaw and Roll:
+
+### Yaw
+
+```{r}
+with_faces %>%
+  ggplot(aes(x = face_yaw)) +
+  geom_histogram(binwidth = 2) +
+  scale_y_continuous(labels = comma) +
+  #scale_x_continuous(breaks = seq(0, 15, 1)) +
+  theme_fivethirtyeight() +
+  labs(title = "Distribution of Yaw Metric", x = "")
+```
+
+Mean:
+
+```{r}
+mean(with_faces$face_yaw)
+```
+
+Median:
+
+```{r}
+median(with_faces$face_yaw)
+```
+
+So there is a slight trend of the nose pointing to the left ... or at least that is what the algorithm is detecting. Could be a bias!
+
+But really, as we see below, -1 or -2 is really not visibly noticable as a head turn.
+
+
+### Yaw Examples
+
+**Light Negative Yaw**
+
+Faces with yaw between -1 and -1.8
+
+```{r}
+face_ind <- c(1,2,3)
+filtered_faces <- with_faces %>% filter(face_count == 1) %>% filter(face_yaw < -1) %>% filter(face_yaw > -1.8)
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+**Medium Negative Yaw**
+
+Faces with Yaw between -10 and -15
+
+```{r}
+med_neg_yaw <- with_faces %>% filter(face_count == 1) %>% filter(face_yaw < -10) %>% filter(face_yaw > -15)
+row <- med_neg_yaw[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+**Medium Positive Yaw**
+
+Faces with Yaw between 10 and 15
+
+```{r}
+med_pos_yaw <- with_faces %>% filter(face_count == 1) %>% filter(face_yaw > 10) %>% filter(face_yaw < 15)
+row <- med_pos_yaw[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+**Heavy Positive Yaw**
+
+Faces with > 30 Yaw
+
+```{r}
+filtered_faces <- with_faces %>% filter(face_count == 1) %>% filter(face_yaw > 30)
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+
+### Roll
+
+Let's get our Roll on.
+
+```{r}
+with_faces %>%
+  ggplot(aes(x = face_roll)) +
+  geom_histogram(binwidth = 2) +
+  scale_y_continuous(labels = comma) +
+  #scale_x_continuous(breaks = seq(0, 15, 1)) +
+  theme_fivethirtyeight() +
+  labs(title = "Distribution of Roll Metric", x = "")
+```
+
+
+```{r}
+mean(with_faces$face_roll)
+```
+
+```{r}
+median(with_faces$face_roll)
+```
+
+Roll looks to be distributed pretty evenly - but there is a longer tail to the right. The summary stats indicate there is a slight drag to the left.   
+
+Lets look at some examples!
+
+### Roll Examples
+
+**Light Negative Roll**
+
+Faces with roll between -1 and -2
+
+```{r}
+face_ind <- c(1,2,3)
+filtered_faces <- with_faces %>% filter(face_count == 1) %>% filter(face_roll < -1) %>% filter(face_roll > -2)
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+**Heavy Negative Roll**
+
+Faces with roll < -20
+
+```{r}
+filtered_faces <- with_faces %>% filter(face_count == 1) %>% filter(face_roll < -20)
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+**Heavy Positive Roll**
+
+Faces with roll > 20
+
+```{r}
+filtered_faces <- with_faces %>% filter(face_count == 1) %>% filter(face_roll > 20)
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+
+## Facial Hair
+
+Look just at Beards for a second:
+
+```{r}
+with_faces %>% filter(face_gender == 'male') %>%
+  ggplot(aes(x = face_beard)) + 
+  geom_freqpoly(binwidth = 0.01) + 
+  labs(title = "Male Beard Likelihood Values")
+```
+
+Interesting! So this isn't really a continuous variable, instead its descritized. 
+
+To double check that, here are the unique values of `face_beard`:
+
+```{r}
+sort(unique(with_faces$face_beard))
+```
+
+
+
+```{r}
+facial_hair <- with_faces %>% tidyr::gather(key = hair_type, value = hair_ratio, face_beard, face_moustache, face_sideburns)
+```
+
+
+```{r}
+facial_hair %>% filter(face_gender == 'male') %>%
+  ggplot(aes(x = as.factor(hair_ratio), fill = hair_type)) + 
+  geom_bar(position = "dodge") + 
+  scale_y_continuous(labels = comma) +
+  labs(title = "Male Facial Hair Counts", fill = "Hair Type") + 
+  theme_fivethirtyeight()
+```
+
+```{r}
+facial_hair %>% filter(face_gender == 'male') %>%
+  ggplot(aes(x = as.factor(hair_ratio), fill = hair_type)) + 
+  #geom_bar(position = "dodge") + 
+  geom_bar(aes(y=..count../sum(..count..)), position = "dodge") + 
+  scale_y_continuous(labels = percent) +
+  labs(title = "Male Facial Hair Percents", fill = "Hair Type") + 
+  theme_fivethirtyeight()
+```
+
+```{r}
+
+facial_hair %>% filter(face_gender == 'male') %>%
+  ggplot(aes(x = as.factor(hair_ratio), fill = hair_type)) + 
+  #geom_bar(position = "dodge") + 
+  geom_bar(aes(y=..count../sum(..count..)), position = "dodge") + 
+  scale_y_continuous(labels = percent) +
+  labs(title = "Male Facial Hair Percents", fill = "Hair Type") + 
+  facet_wrap(~ hair_type) +
+  theme_fivethirtyeight()
+```
+
+
+What about `female` identified faces?
+
+```{r}
+facial_hair %>% filter(face_gender == 'female') %>%
+  ggplot(aes(x = hair_ratio, fill = hair_type)) + 
+  geom_histogram(binwidth = 0.01) +
+  labs(title = "Women don't have Facial Hair in this Dataset / Algorithm")
+```
+
+### Facial Hair by Category
+
+
+
+
+
+```{r}
+
+facial_hair %>% filter(face_gender == 'male') %>% filter(hair_type == 'face_beard') %>%
+  ggplot(aes(x = as.factor(hair_ratio) )) + 
+  #geom_bar(position = "dodge") + 
+  #geom_bar(aes(y=..count../sum(..count..))) + 
+  geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..])) + 
+  scale_y_continuous(labels = percent) +
+  labs(title = "Beards by Category") + 
+  facet_wrap(~ cat_name) +
+  theme_fivethirtyeight()
+```
+
+```{r}
+filtered_faces <- with_faces %>% filter(face_count == 1) %>% filter(face_gender == 'male') %>% filter(face_beard == 1.0) 
+
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+
+```{r}
+filtered_faces <- with_faces %>% filter(face_count == 1) %>% filter(face_gender == 'male') %>% filter(face_beard == 1.0) 
+
+row <- filtered_faces[face_ind,]
+filename <- paste("data/imgs/", row$cat_id, "/", row$artist_id, ".jpg", sep="")
+knitr::include_graphics(filename)
+```
+
+```{r}
+male_hair <- with_faces %>% filter(face_gender == 'male') %>% mutate(has_facial_hair = face_beard + face_moustache > 0.4)
+```
+
+
+```{r}
+male_hair %>%
+  ggplot(aes(x = has_facial_hair, fill = has_facial_hair))  +
+  #geom_bar() +
+  #geom_histogram(aes(y=..count../sum(..count..)), binwidth = 1.0) + 
+  geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]) ) + 
+  scale_y_continuous(labels = percent) +
+  #scale_x_continuous(breaks = seq(1, 14, 2)) +
+  facet_wrap(~ cat_name) + 
+  labs(title = "Gender Percents of Faces by Category", x = "") +
+  theme_fivethirtyeight()
+```
+
+## Smiles
+
+Most artists appear not to be smiling.
+
+```{r}
+with_faces %>% 
+  ggplot(aes(x = face_smile)) + 
+  geom_histogram(binwidth = 0.1) +
+  labs(title = "Smile Distribution")
+```
+
+Gender doesn't seem to matter much:
+
+```{r}
+with_faces %>% 
+  ggplot(aes(x = face_smile, fill = face_gender)) + 
+  geom_histogram(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]),binwidth = 0.1 ) + 
+  #geom_histogram(aes(y=..count../sum(..count..)), binwidth = 0.1, position = "dodge") +
+  facet_wrap(~ face_gender) +
+  scale_y_continuous(labels = percent) +
+  labs(title = "Smile Distribution by Gender", y = "", x = "")
+```
+
+
+
+
+
+```{r}
+with_faces %>% mutate(is_smiling = face_smile > 0.25) %>%
+  ggplot(aes(x = is_smiling, fill = is_smiling)) + 
+  geom_bar(aes(y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]) ) + 
+  #geom_histogram(aes(y=..count../sum(..count..)), binwidth = 0.1, position = "dodge") +
+  facet_wrap(~ face_gender) +
+  scale_y_continuous(labels = percent) +
+  labs(title = "Smile Distribution by Gender", y = "", x = "")
+```
+
+

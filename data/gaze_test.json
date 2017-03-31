@@ -1,0 +1,37 @@
+[
+  {
+    "id": "camN_yaw0",
+    "url": "https://cloud.githubusercontent.com/assets/9369/24566197/65b1ad20-160d-11e7-931a-ac28be6d8af0.jpg",
+    "gaze": false
+  },
+  {
+    "id": "camN_yawNeg",
+    "url": "https://cloud.githubusercontent.com/assets/9369/24566199/68d0ff88-160d-11e7-8351-764b9d487c97.jpg",
+    "gaze": false
+  },
+  {
+    "id": "camN_yawPos",
+    "url": "https://cloud.githubusercontent.com/assets/9369/24566203/6b921982-160d-11e7-8433-1dc6afe59941.jpg",
+    "gaze": false
+  },
+  {
+    "id": "camY_yaw0",
+    "url": "https://cloud.githubusercontent.com/assets/9369/24566208/6ecd35aa-160d-11e7-910c-388fc1f57d3a.jpg",
+    "gaze": true
+  },
+  {
+    "id": "camY_yaw0_2",
+    "url": "https://cloud.githubusercontent.com/assets/9369/24566213/730cdd0a-160d-11e7-803c-13663c4048a6.jpg",
+    "gaze": true
+  },
+  {
+    "id": "camY_yawNeg",
+    "url": "https://cloud.githubusercontent.com/assets/9369/24566218/75851bf6-160d-11e7-8d69-e8eb7c30e2a7.jpg",
+    "gaze": true
+  },
+  {
+    "id": "camY_yawPos",
+    "url": "https://cloud.githubusercontent.com/assets/9369/24566219/77efc080-160d-11e7-9540-60debffd5112.jpg",
+    "gaze": true
+  }
+]

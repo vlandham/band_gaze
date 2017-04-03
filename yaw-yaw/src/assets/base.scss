@@ -1,0 +1,11 @@
+@import "variables";
+@import "bootstrap_custom";
+@import "./font-awesome/scss/font-awesome.scss";
+@import "./tooltip.scss";
+
+body {
+  background: #fff;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+}
+

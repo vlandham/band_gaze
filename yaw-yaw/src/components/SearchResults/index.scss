@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css?family=Bitter'); // TODO optimize/organize this once we have a font stack.
+
+@import '../../styles/shared';
+
+.SearchResults {
+
+  .best-match {
+    font-size: 1.4em;
+    color: #FF6347;
+    text-align: center;
+    font-family: 'Bitter', serif;
+    font-weight: 600;
+  }
+
+  .city-results {
+    font-size: 0.9em;
+    color: #FF6347;
+    text-align: center;
+    font-family: 'Bitter', serif;
+  }
+}

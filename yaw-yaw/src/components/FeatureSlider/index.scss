@@ -1,0 +1,38 @@
+@import '../../styles/shared';
+
+.FeatureSlider {
+  margin-bottom: 6px;
+  padding:2px 4px 2px 4px;
+
+  .feature-toggle {
+    float:right;
+    cursor: pointer;
+  }
+
+  .feature-label {
+    @include feature-label();
+
+    width: 100%;
+    margin-bottom: 4px;
+    cursor: pointer;
+
+
+    .label-text {
+      border-bottom: 1px dotted #444;
+      display: inline-block;
+    }
+  }
+
+  .feature-slider {
+    transition: opacity 0.25s ease-in-out;
+  }
+
+  &.hideSlider .feature-slider {
+    opacity: 0.1;
+  }
+
+  &.showSlider .feature-slider {
+    opacity: 1;
+  }
+
+}

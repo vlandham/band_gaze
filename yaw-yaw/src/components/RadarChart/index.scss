@@ -1,0 +1,29 @@
+.RadarChart {
+  svg {
+    font-size: 11px;
+    .axis {
+      line {
+        stroke: rgba(0, 0, 0, 0.10);
+      }
+
+      text {
+        fill: rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    .radar-series {
+      fill: rgba(0, 200, 200, 0.8);
+      stroke: rgba(0, 150, 150, 1);
+    }
+
+    .series-0 {
+      fill: rgba(240, 100, 50, 0.8);
+      stroke: rgba(200, 30, 20, 1);
+    }
+
+    .series-1 {
+      fill: rgba(0, 200, 200, 0.8);
+      stroke: rgba(0, 150, 150, 1);
+    }
+  }
+}

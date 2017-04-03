@@ -1,0 +1,23 @@
+@import '../../styles/shared';
+
+.SimilarCityList {
+  ol {
+    column-count: 2;
+    color: $search-results-color;
+    padding: 0 10px;
+  }
+
+  li {
+    line-height: 2em;
+    height: 2em;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

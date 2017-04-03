@@ -1,0 +1,9 @@
+// Shared styles and themes.
+
+@mixin feature-label() {
+  font-weight: bold;
+  text-transform: capitalize;
+  font-size:12px;
+}
+
+$search-results-color: #4A90E2;

@@ -100,6 +100,11 @@ unique_artists %>%
 
 Lots of no-faces detected and solo artists.
 
+```{r}
+max(unique_artists$face_count)
+```
+
+
 
 ### Face Count by Genre
 
@@ -535,5 +540,105 @@ with_faces %>% mutate(is_smiling = face_smile > 0.25) %>%
   scale_y_continuous(labels = percent) +
   labs(title = "Smile Distribution by Gender", y = "", x = "")
 ```
+
+## Image Sizes
+
+
+```{r}
+img_details_filename <- "data/images.csv"
+images <- read_csv(img_details_filename)
+```
+
+```{r}
+images %>%
+  ggplot(aes(x = img_width)) +
+  geom_histogram(binwidth = 10) +
+  labs(title = "Image Widths")
+  
+```
+
+```{r}
+summary(images$img_width)
+```
+
+
+```{r}
+images %>%
+  ggplot(aes(x = img_height)) +
+  geom_histogram(binwidth = 10) +
+  labs(title = "Image Height")
+  
+```
+
+
+```{r}
+summary(images$img_height)
+```
+
+```{r}
+images %>%
+  ggplot(aes(x = img_width, y = img_height)) +
+  geom_point( alpha = 1 / 10) +
+  stat_density2d(aes(fill = ..level..), geom="polygon")
+```
+
+## Face Image Sizes
+
+```{r}
+face_details_filename <- "data/face_sizes.csv"
+face_details <- read_csv(face_details_filename)
+```
+
+
+
+
+
+```{r}
+face_details %>%
+  ggplot(aes(x = img_width, y = img_height)) +
+  geom_point( alpha = 1 / 10) +
+  stat_density2d(aes(fill = ..level..), geom="polygon")
+```
+
+
+```{r}
+face_details_by_artist <- face_details %>% group_by(cat_id, artist_id) %>% mutate(face_count = n()) %>% ungroup()
+```
+
+
+```{r}
+face_details_by_artist %>% distinct(cat_id, artist_id, .keep_all = TRUE) %>%
+  ggplot(aes(x = as.factor(face_count))) + 
+  geom_bar() + 
+  labs(title = "Counts of Artists by Face Count")
+```
+
+
+```{r}
+face_details_by_artist %>% 
+  ggplot(aes(x = as.factor(face_count), y = img_width)) + 
+  geom_boxplot() + 
+  labs(title = "Face Width by Face Count")
+```
+
+```{r}
+face_details_by_artist %>% 
+  ggplot(aes(x = as.factor(face_count), y = img_height)) + 
+  geom_boxplot() + 
+  labs(title = "Face Height by Face Count")
+
+```
+
+
+```{r}
+
+face_details_by_artist %>% 
+  ggplot(aes(x = as.factor(face_count), y = img_height)) + 
+  geom_boxplot() + 
+  facet_wrap(~ cat_id) +
+  labs(title = "Face Height by Face Count")
+```
+
+
 
 

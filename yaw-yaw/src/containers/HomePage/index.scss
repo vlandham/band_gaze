@@ -1,0 +1,28 @@
+
+.HomePage {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  font-size: 14px;
+  .content {
+    // Use flexbox for layout
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    height: 100%;
+    width: 100%;
+
+    .Filter {
+      width: 320px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .FaceList {
+      flex: 1;
+    }
+  }
+}

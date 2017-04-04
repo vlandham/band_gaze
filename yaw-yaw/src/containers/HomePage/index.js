@@ -4,8 +4,11 @@ import { addUrlProps } from 'react-url-query';
 import * as d3 from 'd3';
 
 import faceData from '../../../data/faces.csv';
+import AutoSize from '../../components/AutoSize';
 import Filter from '../../components/Filter';
 import FaceList from '../../components/FaceList';
+
+import './index.scss';
 
 const urlPropsQueryConfig = {
 };
@@ -43,13 +46,19 @@ class HomePage extends Component {
     const { faces, filtered } = this.state;
     return (
       <div className="HomePage">
-        <Filter
-          faces={faces}
-          onUpdateFilter={this.onFilteredChange}
-        />
-        <FaceList
-          faces={filtered}
-        />
+        <div className="content">
+          <div className="controls">
+            <Filter
+              faces={faces}
+              onUpdateFilter={this.onFilteredChange}
+            />
+          </div>
+          <div className="results">
+            <FaceList
+              faces={filtered}
+            />
+          </div>
+        </div>
       </div>
     );
   }

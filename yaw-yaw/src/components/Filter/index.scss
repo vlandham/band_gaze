@@ -1,9 +1,19 @@
 
 .Filter {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 5px;
+  height: 100%;
+  .filters {
+    display: flex;
+    flex-direction: row;
+    // flex-wrap: wrap;
+    // justify-content: space-between;
+    // padding: 5px;
+
+  }
+  .selects {
+    .MultiSelect {
+
+      margin-bottom: 20px;
+    }
+  }
 
 }

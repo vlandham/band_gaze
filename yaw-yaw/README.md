@@ -1,5 +1,4 @@
-# datavis-portfolio-2016
-Bocoup Datavis Portfolio Project 2016
+# YAW YAW
 
 # Installing
 
@@ -46,12 +45,3 @@ To lint the code, run
 ```
 yarn lint
 ```
-
-
-## Running the data server
-
-This app requests data from a small app server, currently expected to be running at http://localhost:5000. You can find the server in https://github.com/bocoup/datavis-portfolio-2016-data/tree/master/server instructions for its setup will be in that repo.
-
----
-
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).

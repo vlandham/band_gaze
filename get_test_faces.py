@@ -5,7 +5,7 @@ import http.client, urllib.request, urllib.parse, urllib.error, base64
 
 import time
 
-M_KEY = '7223b90581904d7b834d2319e5087a2d'
+M_KEY = ''
 
 input_file = 'data/gaze_test.json'
 

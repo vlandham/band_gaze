@@ -54,6 +54,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isempty": "^4.4.0",
     "lodash.values": "^4.3.0",
+    "pixi.js": "^4.4.4",
     "rc-tooltip": "^3.4.2",
     "react": "^15.4.1",
     "react-addons-perf": "^15.4.1",
